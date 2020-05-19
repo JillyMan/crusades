@@ -58,7 +58,7 @@ public class GlfwWindow implements Window {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(windowHandle);
         glfwDestroyWindow(windowHandle);

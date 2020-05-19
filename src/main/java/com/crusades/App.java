@@ -12,25 +12,26 @@ public class App {
     private float r = 0.5f, g = 0.5f, b = 0.5f, a = 1.0f;
 
     private final Window window;
-    private final PerformanceWrapper performanceWrapper;
+    private PerformanceWrapper performanceWrapper;
 
     private App() {
         window = new GlfwWindow(1280, 720, "Our super duper game", 0, System.err);
-        performanceWrapper = new PerformanceWrapper(60);
     }
 
     public void run() {
+        performanceWrapper = new PerformanceWrapper(60, (deltaTime) -> {
+            window.update();
+            updateGame(deltaTime);
+            window.clear(r, g, b, a);
+            window.render();
+        });
+
         while(window.isOpen()) {
-            performanceWrapper.run((deltaTime) -> {
-                update(deltaTime);
-                window.clear(r, g, b, a);
-                window.render();
-           });
+            performanceWrapper.run();
         }
     }
 
-    public void update(float time) {
-        window.update();
+    public void updateGame(float time) {
         if (KeyboardHandler.isKeyPressed(GLFW_KEY_W)) {
             r = rand.nextFloat();
             g = rand.nextFloat();
@@ -39,11 +40,7 @@ public class App {
     }
 
     public void close() {
-        try {
-            window.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        window.close();
     }
 
      public static void main(String[] args) {
