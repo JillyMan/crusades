@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class GlfwWindow implements Window, AutoCloseable {
+public class GlfwWindow implements Window {
 
     private int width;
     private int height;
@@ -33,7 +33,12 @@ public class GlfwWindow implements Window, AutoCloseable {
 
     @Override
     public void clear() {
-        glClearColor(1.0f, 0.5f, 0.5f, 0.0f);
+        clear(1.0f, 0.5f, 0.5f, 0.0f);
+    }
+
+    @Override
+    public void clear(float r, float g, float b, float a) {
+        glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
