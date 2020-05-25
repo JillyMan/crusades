@@ -1,0 +1,9 @@
+#include "../string_resources.h"
+
+STRINGTABLE
+BEGIN
+    ID_STRING_START_GAME    "Start"
+    ID_STRING_LOAD_GAME     "Load"
+    ID_STRING_SAVE_GAME     "Save"
+    ID_STRING_CLOSE_GAME    "Close"
+END

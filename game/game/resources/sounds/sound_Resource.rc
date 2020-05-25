@@ -1,0 +1,7 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "../sound_resources.h"
+
+SOUND_MAIN_MENU			WAVE techno.wav
+SOUND_START_GAME		WAVE create.wav
+SOUND_PLAYER_TELEPORT	WAVE teleport.wav

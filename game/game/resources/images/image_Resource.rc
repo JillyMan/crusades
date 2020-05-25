@@ -1,0 +1,3 @@
+#include "../image_resources.h"
+
+GAME_ICON_LOGO		ICON	logo.ico
