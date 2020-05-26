@@ -1,5 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 
+#include "platform.h"
+
 #include "../resources/image_resources.h"
 #include "../resources/sound_resources.h"
 #include "../resources/string_resources.h"
@@ -7,8 +9,13 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <mmsystem.h>  // very important and include WINMM.LIB too!
+#include <assert.h>
 
+#include <stdlib.h> 
+
+////---- delete when game code will moved to dll
 #include "game.h"
+////----
 
 #define GAME_CLASS_WINDOW L"WND_GAME"
 #define GAME_NAME_WINDOW  L"Crousades"
@@ -20,18 +27,6 @@ bool IsRunning;
 HINSTANCE HInstanceApp = NULL;
 
 int Counter;
-
-struct mouse_input
-{
-};
-
-struct game_input
-{
-    mouse_input Mouse;
-
-
-
-};
 
 enum class SoundType {
     START,
@@ -73,15 +68,54 @@ void Fail(LPCWSTR message)
     MessageBox(NULL, message, L"Fail", MB_OK);
 }
 
-void Win32PullMessages()
+static void Win32ProcessKeyboardMessage(game_button_state* NewState, int state)
+{
+    if (NewState->State != state)
+    {
+        NewState->State = state;
+    }
+}
+
+void Win32PullMessages(HWND window_handle, game_controller_input* Input)
 {
     MSG message;
     while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
     {
-        TranslateMessage(&message);
-        DispatchMessage(&message);
+        switch (message.message)
+        {
+        case WM_QUIT:
+        {
+            IsRunning = false;
+            break;
+        }
+
+        case WM_SYSKEYDOWN:
+        case WM_SYSKEYUP:
+        case WM_KEYDOWN:
+        case WM_KEYUP:
+        {
+            uint32_t vkCode = (uint32_t)message.wParam;
+            int wasDown = (message.lParam & (1 << 30)) != 0;
+            int isDown = (message.lParam & (1 << 31)) == 0;
+
+            if (wasDown != isDown)
+            {
+                if (vkCode == 'W')
+                {
+
+                }
+            }
+            break;
+        }
+        default:
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+            break;
+        }
     }
 }
+
+game_input* NewwInput = new game_input();
 
 LRESULT CALLBACK Win32ProcessCallback(HWND window_handle, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
@@ -102,57 +136,19 @@ LRESULT CALLBACK Win32ProcessCallback(HWND window_handle, UINT message_type, WPA
         {
             break;
         }
-
-        case WM_CHAR: 
-        {
-            int ascii_code = w_param;
-            int key_state = l_param;
-
-            HDC hdc = GetDC(window_handle);
-
-            SetTextColor(hdc, RGB(0, 255, 0));
-            SetBkColor(hdc, RGB(0, 0, 0));
-            SetBkMode(hdc, OPAQUE);
-
-            wchar_t buffer[512];
-
-            wsprintf(buffer, L"WM_CHAR: Character = %c ", ascii_code);
-            TextOut(hdc, 10, 50, buffer, wcslen(buffer));
-            wsprintf(buffer, L"Key State = 0X%X ", key_state);
-
-            TextOut(hdc, 10, 80, buffer, wcslen(buffer));
-            
-            
-            ReleaseDC(window_handle, hdc);
-
-            break;
-        }
         case WM_PAINT:
         {
             Counter++;
 
-            InvalidateRect(window_handle, NULL, TRUE);
-            PAINTSTRUCT ps = {};
+            PAINTSTRUCT ps = { 0 };
             HDC hdc = BeginPaint(window_handle, &ps);
-
-            FillRect(ps.hdc, &ps.rcPaint, CreateSolidBrush(RGB(255, 0, 0)));
-
-            wchar_t message[125];
-            wsprintf(message, TEXT("Your score: %d"), Counter);
-            
-            int len = wcslen(message);
-
-            SetBkMode(hdc, TRANSPARENT);
-
-            TextOut(hdc, 10, 10, message, len);
-
             EndPaint(window_handle, &ps);
             break;
         }
         case WM_DESTROY:
         {
-            IsRunning = false;
-            PostQuitMessage(0);
+            PostMessage(window_handle, WM_QUIT, 0, 0);
+//            PostQuitMessage(0);
             break;
         }
         default:
@@ -182,11 +178,6 @@ WNDCLASSEX GetMyOwnWindowClass(HINSTANCE hInstance)
     return window_class;
 }
 
-#define KEYDOWN(vk_code) \
- ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
-#define KEYUP(vk_code) \
- ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)
-
 INT WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR lpcmdline,
@@ -196,6 +187,8 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
     INT result = 0;
     WNDCLASSEX window_class = GetMyOwnWindowClass(hInstance);
+
+    srand(2550);
 
     if (RegisterClassEx(&window_class))
     {
@@ -220,31 +213,80 @@ INT WINAPI WinMain(HINSTANCE hInstance,
             IsRunning = true;
             
             NextSoundState();
+
+            game_input Input[2] = {};
+            game_input* NewInput = &Input[0];
+            game_input* OldInput = &Input[1];
+
             while(IsRunning) 
             {
-                Win32PullMessages();
-                GameMain();
+                game_controller_input* OldKeyboardController = GetController(OldInput, KEYBOARD_CONTROLLER_INDEX);
+                game_controller_input* NewKeyboardController = GetController(NewInput, KEYBOARD_CONTROLLER_INDEX);
 
+                *NewKeyboardController = {};
+                NewKeyboardController->IsConnected = true;
+
+                for (int i = 0; i < ArrayCount(NewKeyboardController->Buttons); ++i)
+                {
+                    NewKeyboardController->Buttons[i].State = OldKeyboardController->Buttons[i].State;
+                }
+
+                POINT MouseP;
+                GetCursorPos(&MouseP);
+                ScreenToClient(window_handle, &MouseP);
+                NewInput->MouseX = MouseP.x;
+                NewInput->MouseY = MouseP.y;
+                NewwInput = NewInput;
+
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[0],
+                    GetKeyState(VK_LBUTTON) & (1 << 15));
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[1],
+                    GetKeyState(VK_MBUTTON) & (1 << 15));
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[2],
+                    GetKeyState(VK_RBUTTON) & (1 << 15));
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[3],
+                    GetKeyState(VK_XBUTTON1) & (1 << 15));
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[4],
+                    GetKeyState(VK_XBUTTON2) & (1 << 15));
+
+                Win32PullMessages(window_handle, NewKeyboardController);
+
+                //getdc return dc on client area
                 HDC hdc = GetDC(window_handle);
-                // Установка цвета и режима вывода строки
-                SetTextColor(hdc, RGB(0, 255, 0));
-                SetBkColor(hdc, RGB(0, 0, 0));
-                SetBkMode(hdc, OPAQUE);
-                // Вывод информации о состоянии
-                // клавиш перемещения курсора
-                wchar_t buffer[512];
-                wsprintf(buffer, L"Up Arrow: = %d", KEYDOWN(VK_UP));
-                TextOut(hdc, 0, 100, buffer, wcslen(buffer));
-                wsprintf(buffer, L"Down Arrow: = %d", KEYDOWN(VK_DOWN));
-                TextOut(hdc, 0, 120, buffer, wcslen(buffer));
-                wsprintf(buffer, L"Right Arrow: = %d", KEYDOWN(VK_RIGHT));
-                TextOut(hdc, 0, 140, buffer, wcslen(buffer));
-                wsprintf(buffer, L"Left Arrow: = %d", KEYDOWN(VK_LEFT));
-                TextOut(hdc, 0, 160, buffer, wcslen(buffer));
-                // Освобождение контекста устройства
-                ReleaseDC(window_handle, hdc);
+                
+                //HDC hdc = GetWindowDC(window_handle);
+                //HPEN pen = GetStockPen(BLACK_PEN);
+                HPEN pen = CreatePen(PS_DASHDOT, 10, RGB(0, 0, 255));
+                HBRUSH brush = CreateSolidBrush(RGB(0, 255, 0));
 
+                SelectObject(hdc, pen);
+                SelectObject(hdc, brush);
+
+                RECT rect = {};
+                GetClientRect(window_handle, &rect);
+                FillRect(hdc, &rect, CreateSolidBrush(BLACK_BRUSH));
+
+                for (int i = 0; i < 100; ++i) 
+                {
+                    int x = rand() % rect.right - rect.left;
+                    int y = rand() % rect.bottom - rect.top;
+
+                    COLORREF color = RGB(rand() % 255, rand() % 255, rand() % 255);
+
+                    SetPixel(hdc, x, y, color);
+                }
+
+                DeleteObject(brush);
+                DeleteObject(pen);
+
+                ReleaseDC(window_handle, hdc);
+                GameMain(NewInput);
+
+                game_input* Temp = NewInput;
+                NewInput = OldInput;
+                OldInput = Temp;
             }
+
             GameShutdown();
             NextSoundState();
         }

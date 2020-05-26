@@ -27,6 +27,7 @@
     <ClInclude Include="resources\string_resources.h" />
     <ClInclude Include="resources\image_resources.h" />
     <ClInclude Include="src\game.h" />
+    <ClInclude Include="src\platform.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources\images\image_Resource.rc" />

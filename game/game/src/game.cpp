@@ -1,11 +1,11 @@
 #include "game.h"
 
-void GameInit() 
+void GameInit()
 {
 
 }
 
-void GameMain()
+void GameMain(game_input* Input)
 {
 
 }
