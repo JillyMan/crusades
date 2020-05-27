@@ -52,7 +52,7 @@ struct game_controller_input
 
 struct game_input
 {
-    float DeltaTime;
+    float DtPerFrame;
 
     game_button_state MouseButtons[5];
     int MouseX;

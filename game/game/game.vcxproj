@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\test-main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resources\sound_resources.h" />

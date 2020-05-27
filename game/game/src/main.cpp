@@ -142,6 +142,29 @@ LRESULT CALLBACK Win32ProcessCallback(HWND window_handle, UINT message_type, WPA
 
             PAINTSTRUCT ps = { 0 };
             HDC hdc = BeginPaint(window_handle, &ps);
+
+            RECT rect = {};
+            GetClientRect(window_handle, &rect);
+
+            HPEN pen = CreatePen(PS_SOLID, 10, RGB(0, 0, 255));
+            HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
+
+            SelectObject(hdc, pen);
+            SelectObject(hdc, brush);
+
+            POINT points[25];
+            int w = rect.right - rect.left;
+            int h = rect.bottom - rect.top;
+            for (int i = 0; i < ArrayCount(points); ++i)
+            {
+                points[i] = { rand() % w, rand() % h };
+            }
+
+            Polygon(hdc, points, ArrayCount(points));
+
+            DeleteObject(pen);
+            DeleteObject(brush);
+
             EndPaint(window_handle, &ps);
             break;
         }
@@ -209,18 +232,40 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
         if (window_handle)
         {
-            GameInit();
-            IsRunning = true;
-            
+            int MonitorRefreshHz = 60;
+            HDC RefreshDC = GetDC(window_handle);
+            int Win32RefreshRate = GetDeviceCaps(RefreshDC, VREFRESH);
+
+            ReleaseDC(window_handle, RefreshDC);
+            if (Win32RefreshRate > 1)
+            {
+                MonitorRefreshHz = Win32RefreshRate;
+            }
+
+            float GameUpdateHz = 60;
+            float TargetSecondsPerFrame = (1.0f / (GameUpdateHz));
+            int TargetMSPerFrame = 1000 / GameUpdateHz;
+
             NextSoundState();
 
             game_input Input[2] = {};
             game_input* NewInput = &Input[0];
             game_input* OldInput = &Input[1];
 
-            while(IsRunning) 
+            float TargetFramePerSecond = 60.f;
+            float TargetFramePerMS = 1000.f / TargetFramePerSecond;
+
+            ULONGLONG startTime = GetTickCount64();
+
+            GameInit();
+            IsRunning = true;
+
+            float playerX = 10, playerY = 10, playerWidth = 100, playerHeight = 100;
+            float playerSpeed = 128;
+
+            while(IsRunning)
             {
-                NewInput->DeltaTime = 1.0f / 60.0f;
+                NewInput->DtPerFrame = TargetSecondsPerFrame;
 
                 game_controller_input* OldKeyboardController = GetController(OldInput, KEYBOARD_CONTROLLER_INDEX);
                 game_controller_input* NewKeyboardController = GetController(NewInput, KEYBOARD_CONTROLLER_INDEX);
@@ -261,7 +306,6 @@ INT WINAPI WinMain(HINSTANCE hInstance,
                 SelectObject(hdc, pen);
                 SelectObject(hdc, brush);
 
-
                 if (NewInput->MouseButtons[MOUSE_LEFT_BUTTON].State)
                 {
                     MoveToEx(hdc, Input->MouseX, Input->MouseY, NULL);
@@ -272,22 +316,46 @@ INT WINAPI WinMain(HINSTANCE hInstance,
                     LineTo(hdc, Input->MouseX, Input->MouseY);
                 }
 
+                RECT rect = {};
+                GetClientRect(window_handle, &rect);
+                int screenWidth = rect.right - rect.left;
                 if (NewInput->MouseButtons[MOUSE_MID_BUTTON].State)
                 {
-                    RECT rect = {};
-                    GetClientRect(window_handle, &rect);
                     Rectangle(hdc, rect.left, rect.top, rect.right, rect.bottom);
                 }
 
-                DeleteObject(brush);
-                DeleteObject(pen);
-                ReleaseDC(window_handle, hdc);
+                playerX += playerSpeed * NewInput->DtPerFrame;
+
+                if (playerX + playerWidth >= screenWidth)
+                {
+                    playerX = screenWidth - playerWidth;
+                    playerSpeed *= -1;
+                }
+
+                if (playerX < 0)
+                {
+                    playerX = 0;
+                    playerSpeed *= -1;
+                }
+
+                Rectangle(hdc, playerX, playerY, playerX + playerWidth, playerY + playerHeight);
 
                 GameMain(NewInput);
 
                 game_input* Temp = NewInput;
                 NewInput = OldInput;
                 OldInput = Temp;
+
+                while ((startTime - GetTickCount64()) < TargetMSPerFrame) { }
+                startTime = GetTickCount64();
+
+                //wchar_t buf[128];
+                //int len = wsprintf(buf, L"MS per sec:[%.6f]", 1000.0f / (float)frameTime);
+                //TextOut(hdc, 30, 100, buf, len);
+
+                DeleteObject(pen);
+                DeleteObject(brush);
+                ReleaseDC(window_handle, hdc);
             }
 
             GameShutdown();
