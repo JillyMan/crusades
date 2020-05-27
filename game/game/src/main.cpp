@@ -13,8 +13,10 @@
 
 #include <stdlib.h> 
 
+#include <complex>
+
 ////---- delete when game code will moved to dll
-#include "game.h"
+#include "crousades-main.h"
 ////----
 
 #define GAME_CLASS_WINDOW L"WND_GAME"
@@ -68,7 +70,7 @@ void Fail(LPCWSTR message)
     MessageBox(NULL, message, L"Fail", MB_OK);
 }
 
-static void Win32ProcessKeyboardMessage(game_button_state* NewState, int state)
+inline void Win32ProcessKeyboardMessage(game_button_state* NewState, int state)
 {
     if (NewState->State != state)
     {
@@ -114,8 +116,6 @@ void Win32PullMessages(HWND window_handle, game_controller_input* Input)
         }
     }
 }
-
-game_input* NewwInput = new game_input();
 
 LRESULT CALLBACK Win32ProcessCallback(HWND window_handle, UINT message_type, WPARAM w_param, LPARAM l_param)
 {
@@ -220,6 +220,8 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
             while(IsRunning) 
             {
+                NewInput->DeltaTime = 1.0f / 60.0f;
+
                 game_controller_input* OldKeyboardController = GetController(OldInput, KEYBOARD_CONTROLLER_INDEX);
                 game_controller_input* NewKeyboardController = GetController(NewInput, KEYBOARD_CONTROLLER_INDEX);
 
@@ -236,17 +238,16 @@ INT WINAPI WinMain(HINSTANCE hInstance,
                 ScreenToClient(window_handle, &MouseP);
                 NewInput->MouseX = MouseP.x;
                 NewInput->MouseY = MouseP.y;
-                NewwInput = NewInput;
 
-                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[0],
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[MOUSE_LEFT_BUTTON],
                     GetKeyState(VK_LBUTTON) & (1 << 15));
-                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[1],
-                    GetKeyState(VK_MBUTTON) & (1 << 15));
-                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[2],
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[MOUSE_RIGHT_BUTTON],
                     GetKeyState(VK_RBUTTON) & (1 << 15));
-                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[3],
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[MOUSE_MID_BUTTON],
+                    GetKeyState(VK_MBUTTON) & (1 << 15));
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[MOUSE_XBUTTON_1],
                     GetKeyState(VK_XBUTTON1) & (1 << 15));
-                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[4],
+                Win32ProcessKeyboardMessage(&NewInput->MouseButtons[MOUSE_XBUTTON_2],
                     GetKeyState(VK_XBUTTON2) & (1 << 15));
 
                 Win32PullMessages(window_handle, NewKeyboardController);
@@ -254,32 +255,34 @@ INT WINAPI WinMain(HINSTANCE hInstance,
                 //getdc return dc on client area
                 HDC hdc = GetDC(window_handle);
                 
-                //HDC hdc = GetWindowDC(window_handle);
-                //HPEN pen = GetStockPen(BLACK_PEN);
-                HPEN pen = CreatePen(PS_DASHDOT, 10, RGB(0, 0, 255));
-                HBRUSH brush = CreateSolidBrush(RGB(0, 255, 0));
+                HPEN pen = CreatePen(PS_SOLID, 10, RGB(0, 0, 255));
+                HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
 
                 SelectObject(hdc, pen);
                 SelectObject(hdc, brush);
 
-                RECT rect = {};
-                GetClientRect(window_handle, &rect);
-                FillRect(hdc, &rect, CreateSolidBrush(BLACK_BRUSH));
 
-                for (int i = 0; i < 100; ++i) 
+                if (NewInput->MouseButtons[MOUSE_LEFT_BUTTON].State)
                 {
-                    int x = rand() % rect.right - rect.left;
-                    int y = rand() % rect.bottom - rect.top;
+                    MoveToEx(hdc, Input->MouseX, Input->MouseY, NULL);
+                }
 
-                    COLORREF color = RGB(rand() % 255, rand() % 255, rand() % 255);
+                if (NewInput->MouseButtons[MOUSE_RIGHT_BUTTON].State)
+                {
+                    LineTo(hdc, Input->MouseX, Input->MouseY);
+                }
 
-                    SetPixel(hdc, x, y, color);
+                if (NewInput->MouseButtons[MOUSE_MID_BUTTON].State)
+                {
+                    RECT rect = {};
+                    GetClientRect(window_handle, &rect);
+                    Rectangle(hdc, rect.left, rect.top, rect.right, rect.bottom);
                 }
 
                 DeleteObject(brush);
                 DeleteObject(pen);
-
                 ReleaseDC(window_handle, hdc);
+
                 GameMain(NewInput);
 
                 game_input* Temp = NewInput;

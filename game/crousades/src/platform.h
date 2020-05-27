@@ -5,6 +5,16 @@
 
 #define ArrayCount(A) (sizeof(A) / sizeof(A[0]))
 
+#define KEYBOARD_CONTROLLER_INDEX 0
+
+#define MOUSE_BUTTONS       5
+
+#define MOUSE_LEFT_BUTTON   0
+#define MOUSE_RIGHT_BUTTON  1
+#define MOUSE_MID_BUTTON    2
+#define MOUSE_XBUTTON_1     3
+#define MOUSE_XBUTTON_2     4
+
 struct game_button_state
 {
     int State;
@@ -42,14 +52,14 @@ struct game_controller_input
 
 struct game_input
 {
+    float DeltaTime;
+
     game_button_state MouseButtons[5];
     int MouseX;
     int MouseY;
 
     game_controller_input Controllers[5];
 };
-
-#define KEYBOARD_CONTROLLER_INDEX 0
     
 inline game_controller_input* GetController(game_input* Input, int unsigned ControllerIndex)
 {
