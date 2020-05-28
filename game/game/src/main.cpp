@@ -11,9 +11,7 @@
 #include <mmsystem.h>  // very important and include WINMM.LIB too!
 #include <assert.h>
 
-#include <stdlib.h> 
-
-#include <complex>
+#include <stdlib.h>
 
 ////---- delete when game code will moved to dll
 #include "crousades-main.h"
@@ -27,8 +25,6 @@ const int ClientWindowHeight = 720;
 
 bool IsRunning;
 HINSTANCE HInstanceApp = NULL;
-
-int Counter;
 
 enum class SoundType {
     START,
@@ -138,40 +134,14 @@ LRESULT CALLBACK Win32ProcessCallback(HWND window_handle, UINT message_type, WPA
         }
         case WM_PAINT:
         {
-            Counter++;
-
             PAINTSTRUCT ps = { 0 };
             HDC hdc = BeginPaint(window_handle, &ps);
-
-            RECT rect = {};
-            GetClientRect(window_handle, &rect);
-
-            HPEN pen = CreatePen(PS_SOLID, 10, RGB(0, 0, 255));
-            HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
-
-            SelectObject(hdc, pen);
-            SelectObject(hdc, brush);
-
-            POINT points[25];
-            int w = rect.right - rect.left;
-            int h = rect.bottom - rect.top;
-            for (int i = 0; i < ArrayCount(points); ++i)
-            {
-                points[i] = { rand() % w, rand() % h };
-            }
-
-            Polygon(hdc, points, ArrayCount(points));
-
-            DeleteObject(pen);
-            DeleteObject(brush);
-
             EndPaint(window_handle, &ps);
             break;
         }
         case WM_DESTROY:
         {
             PostMessage(window_handle, WM_QUIT, 0, 0);
-//            PostQuitMessage(0);
             break;
         }
         default:
@@ -257,11 +227,8 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
             ULONGLONG startTime = GetTickCount64();
 
-            GameInit();
+            GameInit(window_handle);
             IsRunning = true;
-
-            float playerX = 10, playerY = 10, playerWidth = 100, playerHeight = 100;
-            float playerSpeed = 128;
 
             while(IsRunning)
             {
@@ -297,65 +264,13 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
                 Win32PullMessages(window_handle, NewKeyboardController);
 
-                //getdc return dc on client area
-                HDC hdc = GetDC(window_handle);
-                
-                HPEN pen = CreatePen(PS_SOLID, 10, RGB(0, 0, 255));
-                HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
-
-                SelectObject(hdc, pen);
-                SelectObject(hdc, brush);
-
-                if (NewInput->MouseButtons[MOUSE_LEFT_BUTTON].State)
-                {
-                    MoveToEx(hdc, Input->MouseX, Input->MouseY, NULL);
-                }
-
-                if (NewInput->MouseButtons[MOUSE_RIGHT_BUTTON].State)
-                {
-                    LineTo(hdc, Input->MouseX, Input->MouseY);
-                }
-
-                RECT rect = {};
-                GetClientRect(window_handle, &rect);
-                int screenWidth = rect.right - rect.left;
-                if (NewInput->MouseButtons[MOUSE_MID_BUTTON].State)
-                {
-                    Rectangle(hdc, rect.left, rect.top, rect.right, rect.bottom);
-                }
-
-                playerX += playerSpeed * NewInput->DtPerFrame;
-
-                if (playerX + playerWidth >= screenWidth)
-                {
-                    playerX = screenWidth - playerWidth;
-                    playerSpeed *= -1;
-                }
-
-                if (playerX < 0)
-                {
-                    playerX = 0;
-                    playerSpeed *= -1;
-                }
-
-                Rectangle(hdc, playerX, playerY, playerX + playerWidth, playerY + playerHeight);
-
-                GameMain(NewInput);
-
-                game_input* Temp = NewInput;
-                NewInput = OldInput;
-                OldInput = Temp;
-
                 while ((startTime - GetTickCount64()) < TargetMSPerFrame) { }
                 startTime = GetTickCount64();
 
-                //wchar_t buf[128];
-                //int len = wsprintf(buf, L"MS per sec:[%.6f]", 1000.0f / (float)frameTime);
-                //TextOut(hdc, 30, 100, buf, len);
-
-                DeleteObject(pen);
-                DeleteObject(brush);
-                ReleaseDC(window_handle, hdc);
+                GameMain(NewInput);
+                game_input* Temp = NewInput;
+                NewInput = OldInput;
+                OldInput = Temp;
             }
 
             GameShutdown();

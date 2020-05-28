@@ -9,4 +9,12 @@
 
 // add headers that you want to pre-compile here
 
+#include <stdint.h>
+#include <assert.h>
+
+#include <vector>
+#include <unordered_map>
+
+#include "platform.h"
+
 #endif //PCH_H

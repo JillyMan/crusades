@@ -3,17 +3,18 @@
 #include <stdint.h>
 #include <assert.h>
 
+#define internal static
+
 #define ArrayCount(A) (sizeof(A) / sizeof(A[0]))
 
-#define KEYBOARD_CONTROLLER_INDEX 0
-
 #define MOUSE_BUTTONS       5
-
 #define MOUSE_LEFT_BUTTON   0
 #define MOUSE_RIGHT_BUTTON  1
 #define MOUSE_MID_BUTTON    2
 #define MOUSE_XBUTTON_1     3
 #define MOUSE_XBUTTON_2     4
+
+#define KEYBOARD_CONTROLLER_INDEX 0
 
 struct game_button_state
 {
