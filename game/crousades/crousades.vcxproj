@@ -154,7 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\core\particle_system\particles.h" />
-    <ClInclude Include="src\crousades-main.h" />
+    <ClInclude Include="src\crousades_main.h" />
     <ClInclude Include="src\core\ecs\ecs.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\platform.h" />
@@ -162,7 +162,8 @@
   <ItemGroup>
     <ClCompile Include="src\core\ecs\ecs.cpp" />
     <ClCompile Include="src\core\particle_system\particles.cpp" />
-    <ClCompile Include="src\crousades-main.cpp" />
+    <ClCompile Include="src\crousades_main.cpp" />
+    <ClCompile Include="src\graphics\graphics.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -171,6 +172,9 @@
     </ClCompile>
     <ClCompile Include="src\platform.cpp" />
     <ClCompile Include="tests\ecf-test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\graphics\graphics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
