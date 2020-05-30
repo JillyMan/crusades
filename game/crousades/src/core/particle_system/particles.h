@@ -17,6 +17,6 @@ struct particle
 	};
 };
 
-void InitParticleSystem(HWND window_handle, int count);
+void InitParticleSystem(int particleCount);
 void ParticleSystemUpdate(float dt);
 void Shutdown();

@@ -30,6 +30,9 @@
     <ClInclude Include="src\crousades_main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\graphics\graphics_core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\pch.cpp">
@@ -50,11 +53,11 @@
     <ClCompile Include="src\crousades_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\graphics.cpp">
+    <ClCompile Include="src\core\graphics\dx_graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\graphics\graphics.h" />
+    <None Include="src\core\graphics\graphics.h" />
   </ItemGroup>
 </Project>

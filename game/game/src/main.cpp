@@ -1,4 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
+/*
+    TODO: 
+        -  Add logger
+*/
 
 #include "platform.h"
 
@@ -11,10 +15,8 @@
 #include <mmsystem.h>  // very important and include WINMM.LIB too!
 #include <assert.h>
 
-#include <stdlib.h>
-
 ////---- delete when game code will moved to dll
-#include "crousades-main.h"
+#include "crousades_main.h"
 ////----
 
 #define GAME_CLASS_WINDOW L"WND_GAME"
@@ -84,17 +86,17 @@ void Win32PullMessages(HWND window_handle, game_controller_input* Input)
         case WM_QUIT:
         {
             IsRunning = false;
+            // todo: mb try to make game save here?
             break;
         }
-
         case WM_SYSKEYDOWN:
         case WM_SYSKEYUP:
         case WM_KEYDOWN:
         case WM_KEYUP:
         {
             uint32_t vkCode = (uint32_t)message.wParam;
-            int wasDown = (message.lParam & (1 << 30)) != 0;
-            int isDown = (message.lParam & (1 << 31)) == 0;
+            uint64_t wasDown = (message.lParam & (1 << 30)) != 0;
+            uint64_t isDown = (message.lParam & ((uint64_t)1 << 31)) == 0;
 
             if (wasDown != isDown)
             {
@@ -103,11 +105,17 @@ void Win32PullMessages(HWND window_handle, game_controller_input* Input)
 
                 }
             }
+
+            if (vkCode == VK_ESCAPE)
+            {
+                PostQuitMessage(0);
+            }
             break;
         }
         default:
+            //todo: do we realy have to translate message here?
             TranslateMessage(&message);
-            DispatchMessage(&message);
+            DispatchMessageA(&message);
             break;
         }
     }
@@ -181,8 +189,6 @@ INT WINAPI WinMain(HINSTANCE hInstance,
     INT result = 0;
     WNDCLASSEX window_class = GetMyOwnWindowClass(hInstance);
 
-    srand(2550);
-
     if (RegisterClassEx(&window_class))
     {
         int window_width = ClientWindowWidth;
@@ -192,7 +198,7 @@ INT WINAPI WinMain(HINSTANCE hInstance,
             NULL,
             GAME_CLASS_WINDOW,
             GAME_NAME_WINDOW,
-            WS_VISIBLE | WS_OVERLAPPEDWINDOW,
+            WS_VISIBLE | WS_OVERLAPPEDWINDOW, //WS_POPUP,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             window_width,
@@ -264,13 +270,28 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
                 Win32PullMessages(window_handle, NewKeyboardController);
 
-                while ((startTime - GetTickCount64()) < TargetMSPerFrame) { }
-                startTime = GetTickCount64();
-
                 GameMain(NewInput);
+
                 game_input* Temp = NewInput;
                 NewInput = OldInput;
                 OldInput = Temp;
+
+                uint64_t perCycle = GetTickCount64() - startTime;
+                while ((GetTickCount64() - startTime) < TargetMSPerFrame);
+
+                uint64_t nowTime = GetTickCount64();
+                uint64_t perFrame = nowTime - startTime;
+                startTime = nowTime;
+
+#ifdef _DEBUG
+                HDC hdc = GetDC(window_handle);
+                wchar_t buf[255];
+                int len = wsprintf(buf, L"Frame: [%I64d] ms, cycle: [%I64d] ms\n", perFrame, perCycle);
+                OutputDebugStringW(buf);
+                SetWindowTextW(window_handle, buf);
+//                TextOut(hdc, 10, 50, buf, len);
+                ReleaseDC(window_handle, hdc);
+#endif
             }
 
             GameShutdown();
