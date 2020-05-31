@@ -1,8 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 /*
     TODO: 
+        - if window in windowed mode, double bufering will off.
         - Add logger
-        - Delete Palette instance
 
     BUGS:
         - if try to hide game window, will see error in LockVideoMemory function.
@@ -30,6 +30,7 @@ const int ClientWindowWidth = 1920;
 const int ClientWindowHeight = 1080;
     
 bool IsRunning;
+bool IsPause;
 HINSTANCE HInstanceApp = NULL;
 
 enum class SoundType {
@@ -138,6 +139,15 @@ LRESULT CALLBACK Win32ProcessCallback(HWND window_handle, UINT message_type, WPA
         }
         case WM_ACTIVATE: 
         {
+            if (w_param == WA_ACTIVE)
+            {
+                IsPause = false;
+            }
+            if (w_param == WA_INACTIVE)
+            {
+                IsPause = true;
+            }
+
             break;
         }
         case WM_ACTIVATEAPP:

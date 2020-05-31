@@ -133,8 +133,7 @@ namespace core { namespace graphics {
 	{
 		SecondarySurface->Unlock(NULL);
 
-		HRESULT result = PrimarySurface->Flip(NULL, DDFLIP_WAIT);
-		assert(SUCCEEDED(result));
+		while (FAILED(PrimarySurface->Flip(NULL, DDFLIP_WAIT)));
 
 		VideoBuffer = { };
 	}
