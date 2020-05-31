@@ -1,7 +1,11 @@
 #define WIN32_LEAN_AND_MEAN
 /*
     TODO: 
-        -  Add logger
+        - Add logger
+        - Delete Palette instance
+
+    BUGS:
+        - if try to hide game window, will see error in LockVideoMemory function.
 */
 
 #include "platform.h"
@@ -198,12 +202,12 @@ INT WINAPI WinMain(HINSTANCE hInstance,
             NULL,
             GAME_CLASS_WINDOW,
             GAME_NAME_WINDOW,
-            WS_VISIBLE | WS_OVERLAPPEDWINDOW, //WS_POPUP,
+            WS_VISIBLE | WS_OVERLAPPEDWINDOW, // WS_POPUP,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             window_width,
             window_height,
-            NULL,NULL,hInstance, NULL
+            NULL, NULL, hInstance, NULL
         );
 
         if (window_handle)

@@ -4,7 +4,9 @@
 
 namespace core { namespace graphics {
 
-	void Init(WindowHandle windowHandle, int width, int height);
+#define WHITE_COLOR RGB(255, 255, 255)
+
+	void Init(WindowHandle windowHandle, int width, int height, int windowed);
 
 	void LockVideoMemory();
 	void UnlockVideoMemory();
@@ -12,6 +14,8 @@ namespace core { namespace graphics {
 	void GetVideoMemoryDimension(int& w, int& h);
 
 	void Plot32(int x, int y, int color);
+
+	void ClearBuffer32(int color = WHITE_COLOR);
 
 	void Shutdown();
 }}

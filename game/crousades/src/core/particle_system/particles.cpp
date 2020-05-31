@@ -19,7 +19,7 @@ void InitParticleSystem(int particleCount)
 		particle p;
 		p.x = (float)(rand() % w);
 		p.y = (float)(rand() % h);
-		p.ax = (float)100 + rand() % 200;
+		p.ax = (float)100 + rand() % 400;
 		p.ay = 0;
 		p.color = (255 << 16 | 255 << 8 | 255);
 
@@ -29,15 +29,11 @@ void InitParticleSystem(int particleCount)
 
 internal void EraseScreen(particle* particleBuffer, int count)
 {
-	core::graphics::LockVideoMemory();
-
 	for (int i = 0; i < ParticleCount; ++i)
 	{
 		particle& _particle = ParticleBuffer[i];
 		core::graphics::Plot32(_particle.x, _particle.y, RGB(0, 0, 0));
 	}
-	
-	core::graphics::UnlockVideoMemory();
 }
 
 internal void Update(particle* particleBuffer, int count, float dt)
@@ -60,7 +56,6 @@ internal void Update(particle* particleBuffer, int count, float dt)
 
 internal void Render(particle* particleBuffer, int count)
 {
-	core::graphics::LockVideoMemory();
 	for (int i = 0; i < ParticleCount; ++i)
 	{
 		particle& _particle = ParticleBuffer[i];
@@ -71,7 +66,6 @@ internal void Render(particle* particleBuffer, int count)
 			_particle.b
 		));
 	}
-	core::graphics::UnlockVideoMemory();
 }
 
 void ParticleSystemUpdate(float dt)
