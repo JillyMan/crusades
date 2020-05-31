@@ -8,8 +8,8 @@ namespace core { namespace graphics {
 
 	void Init(WindowHandle windowHandle, int width, int height, int windowed);
 
-	void LockVideoMemory();
-	void UnlockVideoMemory();
+	void StartDraw();
+	void EndDraw();
 
 	void GetVideoMemoryDimension(int& w, int& h);
 

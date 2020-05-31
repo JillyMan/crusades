@@ -17,8 +17,8 @@ void InitParticleSystem(int particleCount)
 	for (int i = 0; i < ParticleCount; ++i)
 	{
 		particle p;
-		p.x = (float)(rand() % w);
-		p.y = (float)(rand() % h);
+		p.x = (float)(rand() % (w - 1));
+		p.y = (float)(rand() % (h - 1));
 		p.ax = (float)100 + rand() % 400;
 		p.ay = 0;
 		p.color = (255 << 16 | 255 << 8 | 255);
@@ -70,7 +70,6 @@ internal void Render(particle* particleBuffer, int count)
 
 void ParticleSystemUpdate(float dt)
 {
-	EraseScreen(ParticleBuffer, ParticleCount);
 	Update(ParticleBuffer, ParticleCount, dt);
 	Render(ParticleBuffer, ParticleCount);
 }

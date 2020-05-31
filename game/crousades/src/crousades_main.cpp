@@ -12,18 +12,19 @@ void GameInit(WindowHandle window_handle)
 {
 	srand(2550);
 
-	core::graphics::Init(window_handle, 1280, 720, 1);
-	InitParticleSystem(10000);
+	core::graphics::Init(window_handle, 1920, 1080, 0);
+	InitParticleSystem(60000);
 }
 
 void GameMain(game_input* Input)
 {
-	core::graphics::LockVideoMemory();
+	core::graphics::StartDraw();
 	ParticleSystemUpdate(Input->DtPerFrame);
-	core::graphics::UnlockVideoMemory();
+	core::graphics::EndDraw();
 }
 
 void GameShutdown()
 {
 	Shutdown();
+	core::graphics::Shutdown();
 }

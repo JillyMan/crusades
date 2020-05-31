@@ -26,9 +26,9 @@
 #define GAME_CLASS_WINDOW L"WND_GAME"
 #define GAME_NAME_WINDOW  L"Crousades"
 
-const int ClientWindowWidth = 1280;
-const int ClientWindowHeight = 720;
-
+const int ClientWindowWidth = 1920;
+const int ClientWindowHeight = 1080;
+    
 bool IsRunning;
 HINSTANCE HInstanceApp = NULL;
 
@@ -202,7 +202,7 @@ INT WINAPI WinMain(HINSTANCE hInstance,
             NULL,
             GAME_CLASS_WINDOW,
             GAME_NAME_WINDOW,
-            WS_VISIBLE | WS_OVERLAPPEDWINDOW, // WS_POPUP,
+            WS_VISIBLE | /*WS_OVERLAPPEDWINDOW*/WS_POPUP,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             window_width,
