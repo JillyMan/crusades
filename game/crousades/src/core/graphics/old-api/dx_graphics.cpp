@@ -1,7 +1,7 @@
 #include <pch.h>
 #include <ddraw.h>
 
-#include "graphics_core.h"
+#include "../graphics_core.h"
 #include "graphics.h"
 
 struct back_buffer
@@ -13,6 +13,8 @@ struct back_buffer
 	int MemorySize;
 	void *Memory;
 };
+
+#define RELEASE_COM(x) if (x) { x->Release(); x = nullptr; }
 
 internal back_buffer VideoBuffer;
 
@@ -73,9 +75,14 @@ namespace core { namespace graphics {
 		assert(SUCCEEDED(result));
 	}
 
-	void Init(WindowHandle window_handle, int width, int height, int windowed)
+	void Init(WindowHandle windowHandle, graphics_setting graphicsSetting)
 	{
-		InitDirectDraw(&GraphicsCardContext, window_handle, width, height, windowed);
+		InitDirectDraw(&GraphicsCardContext, 
+			windowHandle, 
+			graphicsSetting.ResolutionWidth, 
+			graphicsSetting.ResolutionHeight,
+			graphicsSetting.IsWindowed);
+
 		InitSurfaceWithBackBuffer(&PrimarySurface, &SecondarySurface, GraphicsCardContext);
 	}
 
@@ -112,21 +119,6 @@ namespace core { namespace graphics {
 
 		w = surfaceDesc.dwWidth;
 		h = surfaceDesc.dwHeight;
-	}
-
-	void ClearBuffer32(int color)
-	{
-		DDBLTFX blitterFx = { };
-		DDRAW_INIT_STRUCT(blitterFx)
-
-		blitterFx.dwFillColor = color;
-
-		// ready to blt to surface
-		PrimarySurface->Blt(NULL,         // ptr to dest rectangle
-			NULL,                         // ptr to source surface, NA
-			NULL,                         // ptr to source rectangle, NA
-			DDBLT_COLORFILL | DDBLT_WAIT, // fill and wait
-			&blitterFx);                  // ptr to DDBLTFX structure
 	}
 
 	void EndDraw()

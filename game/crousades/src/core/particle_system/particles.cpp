@@ -1,18 +1,24 @@
 #include "pch.h"
 
-#include "core/graphics/graphics.h"
+//#include "core/graphics/graphics.h"
 #include "core/particle_system/particles.h"
+
+#include "core/graphics/idraw_context.hpp"
 
 internal particle* ParticleBuffer;
 internal int ParticleCount;
 
-void InitParticleSystem(int particleCount)
+internal IDrawContext* drawContext;
+
+void InitParticleSystem(int particleCount, IDrawContext* _drawContext)
 {
 	ParticleCount = particleCount;
 	ParticleBuffer = (particle*)malloc(sizeof(particle) * ParticleCount);
 
+	drawContext = _drawContext;
+
 	int w, h;
-	core::graphics::GetVideoMemoryDimension(w, h);
+	drawContext->GetVideoMemoryDimension(w, h);
 
 	for (int i = 0; i < ParticleCount; ++i)
 	{
@@ -27,19 +33,10 @@ void InitParticleSystem(int particleCount)
 	}
 }
 
-internal void EraseScreen(particle* particleBuffer, int count)
-{
-	for (int i = 0; i < ParticleCount; ++i)
-	{
-		particle& _particle = ParticleBuffer[i];
-		core::graphics::Plot32(_particle.x, _particle.y, RGB(0, 0, 0));
-	}
-}
-
 internal void Update(particle* particleBuffer, int count, float dt)
 {
 	int w, h;
-	core::graphics::GetVideoMemoryDimension(w, h);
+	drawContext->GetVideoMemoryDimension(w, h);
 	
 	for (int i = 0; i < ParticleCount; ++i)
 	{
@@ -60,7 +57,7 @@ internal void Render(particle* particleBuffer, int count)
 	{
 		particle& _particle = ParticleBuffer[i];
 		
-		core::graphics::Plot32(_particle.x, _particle.y, RGB(
+		drawContext->Plot32(_particle.x, _particle.y, RGB(
 			_particle.r,
 			_particle.g,
 			_particle.b
@@ -78,4 +75,5 @@ void Shutdown()
 {
 	free(ParticleBuffer);
 	ParticleBuffer = nullptr;
+	ParticleCount = 0;
 }

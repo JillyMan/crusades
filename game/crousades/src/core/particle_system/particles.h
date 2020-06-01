@@ -1,7 +1,8 @@
 #pragma once
 
-#include "core/ecs/ecs.h"
 #include <windows.h>
+
+#include "core/graphics/idraw_context.hpp"
 
 struct particle
 {
@@ -17,6 +18,6 @@ struct particle
 	};
 };
 
-void InitParticleSystem(int particleCount);
+void InitParticleSystem(int particleCount, IDrawContext* drawContext);
 void ParticleSystemUpdate(float dt);
 void Shutdown();

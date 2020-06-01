@@ -62,6 +62,28 @@ struct game_input
     game_controller_input Controllers[5];
 };
     
+enum class GraphicsApiEnum
+{
+    DirectX,
+    OpenGL
+};
+
+struct graphics_setting
+{
+    int IsWindowed;
+    int ResolutionWidth;
+    int ResolutionHeight;
+    int IsSecondBuffer;
+
+    GraphicsApiEnum GraphicsApiType;
+};
+
+struct game_settings
+{
+    float TimePerSecond;
+    graphics_setting GraphicsSetting;
+};
+
 inline game_controller_input* GetController(game_input* Input, int unsigned ControllerIndex)
 {
     assert(ControllerIndex < ArrayCount(Input->Controllers));

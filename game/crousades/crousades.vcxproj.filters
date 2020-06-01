@@ -33,6 +33,18 @@
     <ClInclude Include="src\core\graphics\graphics_core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\graphics\idraw_context.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\directx\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\draw_context_factory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\directx\draw_surface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\pch.cpp">
@@ -53,11 +65,20 @@
     <ClCompile Include="src\crousades_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\graphics\dx_graphics.cpp">
+    <ClCompile Include="src\core\graphics\directx\direct_draw_context.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\graphics\directx\direct_draw_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\graphics\old-api\dx_graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\graphics\directx\draw_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\core\graphics\graphics.h" />
+    <None Include="src\core\graphics\old-api\graphics.h" />
   </ItemGroup>
 </Project>
