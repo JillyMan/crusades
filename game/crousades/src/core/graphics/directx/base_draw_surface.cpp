@@ -31,12 +31,28 @@ namespace core { namespace graphics {
 		backBufferInfo.MemorySize = surfaceDesc.lPitch * surfaceDesc.dwHeight;
 		backBufferInfo.Memory = (uint32_t*)surfaceDesc.lpSurface;
 
-		memset(backBufferInfo.Memory, 0, backBufferInfo.MemorySize);
+		//memset(backBufferInfo.Memory, 0, backBufferInfo.MemorySize);
 	}
 
-	void BaseDrawSurface::Blit()
+	// Warning: this function will has bug if screen is in windowed mode.
+	void BaseDrawSurface::Clear(int color)
 	{
+		DDBLTFX bltSetting;
+		DDRAW_INIT_STRUCT(bltSetting);
+		
+		bltSetting.dwFillColor = color;
 
+		int w, h;
+		GetVideoMemoryDimension(w, h);
+
+		RECT descRect;
+		descRect.left = 0;
+		descRect.top = 0;
+		descRect.right = w;
+		descRect.bottom = h;
+
+		HRESULT result = workingSurface->Blt(&descRect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &bltSetting);
+		assert(SUCCEEDED(result));
 	}
 
 	void BaseDrawSurface::DrawBitMap(int x, int y, bit_map& bitMap)
@@ -68,9 +84,9 @@ namespace core { namespace graphics {
 	void BaseDrawSurface::GetVideoMemoryDimension(int& w, int& h)
 	{
 		DDSURFACEDESC2 surfaceDesc = { };
-		DDRAW_INIT_STRUCT(surfaceDesc)
+		DDRAW_INIT_STRUCT(surfaceDesc);
 
-			HRESULT result = workingSurface->GetSurfaceDesc(&surfaceDesc);
+		HRESULT result = workingSurface->GetSurfaceDesc(&surfaceDesc);
 		assert(SUCCEEDED(result));
 
 		w = surfaceDesc.dwWidth;

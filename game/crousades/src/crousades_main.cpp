@@ -27,7 +27,7 @@ void GameInit(WindowHandle window_handle)
 	Setting.GraphicsApiType = GraphicsApiEnum::DirectX;
 	Setting.ResolutionWidth = 1920;
 	Setting.ResolutionHeight = 1080;
-	Setting.IsWindowed = 1;
+	Setting.IsWindowed = 0;
 	Setting.SecondBufferCount = Setting.IsWindowed ? 0 : 1;
 
 	drawContext = core::graphics::DrawContextFactory::GetDrawContext(Setting, window_handle);
@@ -56,7 +56,7 @@ void GameInit(WindowHandle window_handle)
 
 void GameMain(game_input* Input)
 {
-
+	surface->Clear(RGB(0, 255, 0));
 	surface->StartDraw();
 	
 	playerX += speedX * Input->DtPerFrame;

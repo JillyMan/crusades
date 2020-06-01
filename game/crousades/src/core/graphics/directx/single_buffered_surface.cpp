@@ -10,7 +10,7 @@ namespace core { namespace graphics {
 		DDSURFACEDESC2 surfaceDescription = { };
 		DDRAW_INIT_STRUCT(surfaceDescription)
 
-			surfaceDescription.dwFlags = DDSD_CAPS;
+		surfaceDescription.dwFlags = DDSD_CAPS;
 		surfaceDescription.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
 		HRESULT result = graphicsCardContext->CreateSurface(&surfaceDescription, &primarySurface, NULL);

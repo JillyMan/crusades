@@ -24,7 +24,7 @@ namespace core { namespace graphics {
 
 		virtual void StartDraw() override;
 
-		virtual void Blit() override;
+		virtual void Clear(int color) override;
 		virtual void DrawBitMap(int x, int y, bit_map& bitMap) override;
 		virtual void GetVideoMemoryDimension(int& w, int& h) override;
 
