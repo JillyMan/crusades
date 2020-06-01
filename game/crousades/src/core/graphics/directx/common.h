@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/graphics/graphics_core.h"
+
 #define DEFAULT_BPP_MODE_BIT 32
 #define DEFAULT_BPP_MODE_BYTE 4
 

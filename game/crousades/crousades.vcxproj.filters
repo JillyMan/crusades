@@ -42,7 +42,19 @@
     <ClInclude Include="src\core\graphics\draw_context_factory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\graphics\directx\draw_surface.hpp">
+    <ClInclude Include="src\core\graphics\primitives\primitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\ISurface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\directx\single_buffered_surface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\directx\double_buffered_surface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\graphics\directx\base_draw_surface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,7 +86,13 @@
     <ClCompile Include="src\core\graphics\old-api\dx_graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\graphics\directx\draw_surface.cpp">
+    <ClCompile Include="src\core\graphics\directx\base_draw_surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\graphics\directx\single_buffered_surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\graphics\directx\double_buffered_surface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

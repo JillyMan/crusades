@@ -1,7 +1,10 @@
 #include "pch.h"
 
-#include "core/graphics/directx/common.h"
 #include "direct_draw_context.hpp"
+
+#include "core/graphics/directx/common.h"
+#include "core/graphics/directx/single_buffered_surface.hpp"
+#include "core/graphics/directx/double_buffered_surface.hpp"
 
 namespace core { namespace graphics {
 
@@ -10,14 +13,8 @@ namespace core { namespace graphics {
 	{
 	}
 
-	DirectDrawContext::DirectDrawContext(WindowHandle windowHandle, int width, int height, int windowed) 
-		: DirectDrawContext(windowHandle, width, height, windowed, 0)
-	{
-	}
-
-	DirectDrawContext::DirectDrawContext(WindowHandle windowHandle, int width, int height, int windowed, int secondBackBuffer)
-		: backBufferInfo(),
-		graphicsCardContext(nullptr)
+	DirectDrawContext::DirectDrawContext(WindowHandle windowHandle, int width, int height, int windowed)
+		: graphicsCardContext(nullptr)
 	{
 		HRESULT result = DirectDrawCreateEx(NULL, (void**)&(graphicsCardContext), IID_IDirectDraw7, NULL);
 		assert(SUCCEEDED(result));
@@ -38,30 +35,21 @@ namespace core { namespace graphics {
 			result = graphicsCardContext->SetDisplayMode(width, height, DEFAULT_BPP_MODE_BIT, 0, 0);
 			assert(SUCCEEDED(result));
 		}
-
-		directDrawSurface = new DrawSurface(
-			graphicsCardContext, 
-			!windowed && secondBackBuffer
-		);
 	}
 
 	DirectDrawContext::~DirectDrawContext() 
 	{
-		delete directDrawSurface;
 		RELEASE_COM(this->graphicsCardContext);
 	}
 
-	void DirectDrawContext::StartDraw()
+	ISurface* DirectDrawContext::CreateDrawSurface(int countBackBuffers)
 	{
-		directDrawSurface->Lock(backBufferInfo);
-	}
+		if (countBackBuffers == 0) 
+		{
+			return new SingleBufferedSurface(this->graphicsCardContext);
+		}
 
-	void DirectDrawContext::EndDraw() 
-	{
-		directDrawSurface->Flip();
-
-		//todo: check - what will happen if write something in backBufferInfo.Memory, after Flip ??
-		backBufferInfo = { };
+		return new DoubleBufferedSurface(this->graphicsCardContext);
 	}
 
 }}

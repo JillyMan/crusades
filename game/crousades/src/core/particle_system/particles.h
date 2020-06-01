@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#include "core/graphics/idraw_context.hpp"
+#include "core/graphics/ISurface.hpp"
 
 struct particle
 {
@@ -18,6 +18,6 @@ struct particle
 	};
 };
 
-void InitParticleSystem(int particleCount, IDrawContext* drawContext);
+void InitParticleSystem(int particleCount, core::graphics::ISurface* drawContext);
 void ParticleSystemUpdate(float dt);
 void Shutdown();

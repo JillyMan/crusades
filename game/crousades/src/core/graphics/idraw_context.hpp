@@ -1,13 +1,14 @@
 #pragma once
 
-class IDrawContext
-{
-public:
-	virtual void StartDraw() = 0;
+#include "ISurface.hpp"
 
-	virtual void Plot32(int x, int y, int color) = 0;
+#include "core/graphics/primitives/primitives.h"
 
-	virtual void GetVideoMemoryDimension(int& w, int& h) = 0;
+namespace core { namespace graphics {
 
-	virtual void EndDraw() = 0;
-};
+	class IDrawContext
+	{
+	public:
+		virtual ISurface* CreateDrawSurface(int countBackBuffers = 0) = 0;
+	};
+}}

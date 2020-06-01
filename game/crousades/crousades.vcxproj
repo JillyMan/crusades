@@ -153,10 +153,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\graphics\directx\base_draw_surface.hpp" />
     <ClInclude Include="src\core\graphics\directx\common.h" />
-    <ClInclude Include="src\core\graphics\directx\draw_surface.hpp" />
+    <ClInclude Include="src\core\graphics\directx\double_buffered_surface.hpp" />
+    <ClInclude Include="src\core\graphics\directx\single_buffered_surface.hpp" />
     <ClInclude Include="src\core\graphics\draw_context_factory.hpp" />
     <ClInclude Include="src\core\graphics\idraw_context.hpp" />
+    <ClInclude Include="src\core\graphics\ISurface.hpp" />
+    <ClInclude Include="src\core\graphics\primitives\primitives.h" />
     <ClInclude Include="src\core\particle_system\particles.h" />
     <ClInclude Include="src\crousades_main.h" />
     <ClInclude Include="src\core\ecs\ecs.h" />
@@ -166,9 +170,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\ecs\ecs.cpp" />
-    <ClCompile Include="src\core\graphics\directx\draw_surface.cpp" />
+    <ClCompile Include="src\core\graphics\directx\base_draw_surface.cpp" />
+    <ClCompile Include="src\core\graphics\directx\double_buffered_surface.cpp" />
     <ClCompile Include="src\core\graphics\directx\direct_draw_context.cpp" />
     <ClCompile Include="src\core\graphics\directx\direct_draw_context.hpp" />
+    <ClCompile Include="src\core\graphics\directx\single_buffered_surface.cpp" />
     <ClCompile Include="src\core\particle_system\particles.cpp" />
     <ClCompile Include="src\crousades_main.cpp" />
     <ClCompile Include="src\core\graphics\old-api\dx_graphics.cpp" />

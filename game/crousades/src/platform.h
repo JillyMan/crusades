@@ -73,7 +73,7 @@ struct graphics_setting
     int IsWindowed;
     int ResolutionWidth;
     int ResolutionHeight;
-    int IsSecondBuffer;
+    int SecondBufferCount;
 
     GraphicsApiEnum GraphicsApiType;
 };

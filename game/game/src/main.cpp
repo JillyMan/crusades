@@ -109,16 +109,22 @@ void Win32PullMessages(HWND window_handle, game_controller_input* Input)
                 {
 
                 }
+
+                if (vkCode == 'P')
+                {
+                    IsPause = !IsPause;
+                }
             }
 
             if (vkCode == VK_ESCAPE)
             {
                 PostQuitMessage(0);
             }
+
             break;
         }
         default:
-            //todo: do we realy have to translate message here?
+            //todo: do we really have to translate message here?
             TranslateMessage(&message);
             DispatchMessageA(&message);
             break;
@@ -248,6 +254,7 @@ INT WINAPI WinMain(HINSTANCE hInstance,
             ULONGLONG startTime = GetTickCount64();
 
             GameInit(window_handle);
+
             IsRunning = true;
 
             while(IsRunning)
@@ -284,7 +291,10 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
                 Win32PullMessages(window_handle, NewKeyboardController);
 
-                GameMain(NewInput);
+                if (!IsPause)
+                {
+                    GameMain(NewInput);
+                }
 
                 game_input* Temp = NewInput;
                 NewInput = OldInput;

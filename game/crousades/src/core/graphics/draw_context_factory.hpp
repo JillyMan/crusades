@@ -18,8 +18,7 @@ namespace core { namespace graphics {
 						windowHandle,
 						Setting.ResolutionWidth,
 						Setting.ResolutionHeight,
-						Setting.IsWindowed,
-						Setting.IsSecondBuffer
+						Setting.IsWindowed
 					);
 				}
 				default:

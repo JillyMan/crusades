@@ -1,24 +1,21 @@
 #include "pch.h"
 
-//#include "core/graphics/graphics.h"
 #include "core/particle_system/particles.h"
-
-#include "core/graphics/idraw_context.hpp"
 
 internal particle* ParticleBuffer;
 internal int ParticleCount;
 
-internal IDrawContext* drawContext;
+internal core::graphics::ISurface* surface;
 
-void InitParticleSystem(int particleCount, IDrawContext* _drawContext)
+void InitParticleSystem(int particleCount, core::graphics::ISurface* _surface)
 {
 	ParticleCount = particleCount;
 	ParticleBuffer = (particle*)malloc(sizeof(particle) * ParticleCount);
 
-	drawContext = _drawContext;
+	surface = _surface;
 
 	int w, h;
-	drawContext->GetVideoMemoryDimension(w, h);
+	surface->GetVideoMemoryDimension(w, h);
 
 	for (int i = 0; i < ParticleCount; ++i)
 	{
@@ -36,7 +33,7 @@ void InitParticleSystem(int particleCount, IDrawContext* _drawContext)
 internal void Update(particle* particleBuffer, int count, float dt)
 {
 	int w, h;
-	drawContext->GetVideoMemoryDimension(w, h);
+	surface->GetVideoMemoryDimension(w, h);
 	
 	for (int i = 0; i < ParticleCount; ++i)
 	{
@@ -57,7 +54,7 @@ internal void Render(particle* particleBuffer, int count)
 	{
 		particle& _particle = ParticleBuffer[i];
 		
-		drawContext->Plot32(_particle.x, _particle.y, RGB(
+		surface->Plot32(_particle.x, _particle.y, RGB(
 			_particle.r,
 			_particle.g,
 			_particle.b
